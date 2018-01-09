@@ -21,13 +21,15 @@ from redis import StrictRedis
 class check_Codis(object):
 
     def usage(self):
-        print "Usage:check_codis_demo.py [OPTIONS]"
-        print u"-h,--host          必有,dashboard的ip, eg:127.0.0.1"
-        print u"-p,--port          必有,dashboard的port, eg:18087"
-        print u"-i,--path-install  必有,codis的安装路径(绝对路径), eg:/opt/codis"
-        print u"-c,--path-config   必有,配置文件config.ini的绝对路径"
-        print u"-n,--product_name  必有,codis集群的product_name"
-        print u"--report           可选,指定是否发送报警信息"
+        print "Usage:python check_codis_demo.py [OPTIONS]"
+        print u"-h,--host          required,dashboard ip, eg:127.0.0.1"
+        print u"-p,--port          required,dashboard port, eg:18087"
+        print u"-i,--path-install  required,codis installation path, eg:/opt/codis"
+        print u"-c,--path-config   required,path of config.ini"
+        print u"-n,--product_name  required,product_name of codis"
+        print u"-e, --mail-to      required,mail_address seprated by comma"
+        print u"--sms-to           optional,if set --report,then phone numbers must be needed"
+        print u"--report           optional,if send sms or not"
         sys.exit(1)
 
     def errorAdd(self, p_name, msg):
@@ -42,10 +44,10 @@ class check_Codis(object):
 
     def getJobConfig(self):
         mail_config_dict = {"smtp_host": "127.0.0.1", "smtp_port": 25, "smtp_user": "xxx", "smtp_password": "xxx", "mail_from": "odisCheck@example.com", "smtp_ssl_enable": False, "mail_subject": u"Codis warning",
-                            "mail_to": "yourmail@example.com"}  # 邮件发送目标，英文逗号分割
+                            "mail_to": self.cmd_args["mail"]}  # 邮件发送目标，英文逗号分割
         sms_config_dict = {"sms_message": self.cmd_args["product"] + u":codis集群实例数发生变化，详细请检查邮件",
                            "proxy_server": "127.0.0.1", "proxy_port": "8080",  # 允许使用http代理发送短信
-                           "sms_sendto": "10000000000"}  # 短信件发送目标，英文逗号分割
+                           "sms_sendto": self.cmd_args["sms"]}  # 短信件发送目标，英文逗号分割
         self.contact_List = {"mail": mail_config_dict, "sms": sms_config_dict}
         return self.contact_List
 
@@ -80,11 +82,7 @@ class check_Codis(object):
                 for st in report_config["sms"]["sms_sendto"].split(","):
                     sms_url = "http://message/sendSms.do"
                     params_dict = {
-                        "appKey": "app",
-                        "userIp": "127.0.0.1",
-                        "mobile": st,
-                        "args": (report_config["sms"]["sms_message"]).encode("gbk"),
-                        "businessName": "app"}
+                        "userIp": "127.0.0.1"}
                     # if proxy_server != "" and proxy_port != "":
                     #    proxy = urllib2.ProxyHandler({"http": "http://" + proxy_server + ":" + proxy_port})
                     #    opener = urllib2.build_opener(proxy)
@@ -97,11 +95,11 @@ class check_Codis(object):
 
     def argsParse(self, sys_args):
         try:
-            shortargs = "h:p:i:c:n:"
+            shortargs = "h:p:i:c:n:e:"
             longargs = ["host=", "port=", "path-install=",
-                        "path-config=", "report", "product_name="]
+                        "path-config=", "report", "product_name=", "mail-to=", "sms-to"]
             opts, args = getopt.getopt(sys_args[1:], shortargs, longargs)
-            if len(opts) < 5:
+            if len(opts) < 6:
                 self.usage()
             for opt, val in opts:
                 if opt in ("-h,--host") and val != "":
@@ -112,8 +110,12 @@ class check_Codis(object):
                     self.cmd_args["codis"] = val
                 if opt in ("-c,--path-config") and val != "":
                     self.cmd_args["config"] = val
+                if opt in ("-e,--mail-to") and val != "":
+                    self.cmd_args["mail"] = val
                 if opt == "--report":
                     self.cmd_args["report"] = True
+                if opt == "--sms-to" and val != "":
+                    self.cmd_args["sms"] = val
                 if opt in ("-n,--product_name") and val != "":
                     self.cmd_args["product"] = val
             return self.cmd_args
@@ -197,7 +199,8 @@ class check_Codis(object):
         Constructor
         '''
         self.cmd_args = {"host": None, "port": None, "codis": None,
-                         "config": None, "report": False, "product": None}
+                         "config": None, "report": False, "product": None,
+                         "mail": None, "sms": None}
         self.argsParse(sys_args)
         self.errorMsg = {}
         self.groupMsg = {}
