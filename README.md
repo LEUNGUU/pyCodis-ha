@@ -10,7 +10,8 @@
 
 ```python
 mail_config_dict = {"smtp_host": "127.0.0.1", "smtp_port": 25, "smtp_user": "xxx", "smtp_password": "xxx", 
-                    "mail_from": "odisCheck@example.com", "smtp_ssl_enable": False, "mail_subject": u"Codis warning",
+                    "mail_from": "odisCheck@example.com", "smtp_ssl_enable": False, 
+                    "mail_subject": u"Codis warning",
 ```
 
 * set your sms server configurations in the function **getJobConfig()** (if needed):
