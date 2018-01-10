@@ -27,6 +27,6 @@ python check_codis_v1.py -h 127.0.0.1 -p 18087 \
                          -i /opt/codis/ -c /opt/codis/config.ini \
                          -n example -e yourmail@example.com [--sms-to 10000000000 --report]
 ```
-## Finally, Can I repost it? How can i use this script?
+## Finally, Can I repost it?
 
-Feel free to play with codes, fork it or send pull request, but, nope, you can not repost it, just direct them to here. Also, the use of the script is at your on risk and your own responsibility, and has nothing to do with me.
+Feel free to play with codes, fork it or send pull request, but, nope, you can not repost it, just direct them to here. Also, the use of the script is at your on risk and your own responsibility, and has nothing to do with me.:)
