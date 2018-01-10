@@ -21,7 +21,7 @@ sms_config_dict = {"sms_message": self.cmd_args["product"] + u":codis cluster ha
                    "proxy_server": "127.0.0.1", "proxy_port": "8080"}
 ```
 
-* run it, get more details about options by directly run **python check_codis_v1.py**
+* run it, get more details about options by directly running **python check_codis_v1.py**
 ```shell
 python check_codis_v1.py -h 127.0.0.1 -p 18087 \
                          -i /opt/codis/ -c /opt/codis/config.ini \
